@@ -49,6 +49,15 @@ define Device/edgecore_eap104
 endef
 TARGET_DEVICES += edgecore_eap104
 
+define Device/glinet_gl_b3000
+  DEVICE_TITLE := GL.iNet B3000
+  DEVICE_DTS := qcom-ipq5018-glinet-gl-b3000
+  SUPPORTED_DEVICES := glinet,gl-b3000
+  DEVICE_PACKAGES := ath11k-wifi-gl-b3000 ath11k-firmware-ipq50xx-spruce ath11k-firmware-qcn6122
+  DEVICE_DTS_CONFIG := config@mp03.5-c1
+endef
+TARGET_DEVICES += glinet_gl_b3000
+
 define Device/udaya_a6_id2
   DEVICE_TITLE := Udaya A6 - ID2
   DEVICE_DTS := qcom-ipq5018-udaya-a6-id2

@@ -61,6 +61,17 @@ ath11k_generate_macs_eww631_b1() {
 	echo -ne \\x${mac2//:/\\x} >> /lib/firmware/ath11k-macs
 }
 
+ath11k_generate_macs_gl_b3000() {
+	mac=$(cat /proc/gl-hw-info/device_mac)
+	[ -z "$mac" ] && ath11k_generate_macs || {
+		touch /lib/firmware/ath11k-macs
+		mac1=$(macaddr_add $mac 3)
+		mac2=$(macaddr_add $mac 4)
+		echo -ne \\x${mac2//:/\\x} >> /lib/firmware/ath11k-macs
+		echo -ne \\x${mac1//:/\\x} >> /lib/firmware/ath11k-macs
+	}
+}
+
 caldata_die() {
 	echo "caldata: " "$*"
 	exit 1
@@ -93,6 +104,7 @@ ath11k/IPQ5018/hw1.0/caldata.bin)
 	edgecore,oap101-6e|\
 	edgecore,oap101e|\
 	edgecore,oap101e-6e|\
+	glinet,gl-b3000|\
 	hfcl,ion4x_w|\
 	hfcl,ion4xi_w|\
 	optimcloud,d60|\
@@ -130,7 +142,8 @@ ath11k/qcn6122/hw1.0/caldata_2.bin)
 		caldata_extract "0:ART" 0x4c000 0x20000  
 		;;
 	cybertan,eww631-a1|\
-	cybertan,eww631-b1)
+	cybertan,eww631-b1|\
+	glinet,gl-b3000)
 		caldata_extract "0:ART" 0x26800 0x20000
 		;;
 	esac
@@ -166,6 +179,9 @@ ath11k-macs)
 	optimcloud,d50-5g|\
 	yuncore,fap655)
 		ath11k_generate_macs
+		;;
+	glinet,gl-b3000)
+		ath11k_generate_macs_gl_b3000
 		;;
 	hfcl,ion4x_w|\
 	hfcl,ion4xi_w)

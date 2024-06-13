@@ -73,6 +73,7 @@ platform_check_image() {
 	cybertan,eww631-a1|\
 	cybertan,eww631-b1|\
 	edgecore,eap104|\
+	glinet,gl-b3000|\
 	hfcl,ion4x_w|\
 	hfcl,ion4xi_w|\
 	optimcloud,d60|\
@@ -145,6 +146,9 @@ platform_do_upgrade() {
 			CI_UBIPART="rootfs_1"
 			CI_FWSETENV="bootfrom 1"
 		fi
+		nand_upgrade_tar "$1"
+		;;
+	glinet,gl-b3000)
 		nand_upgrade_tar "$1"
 		;;
 	esac

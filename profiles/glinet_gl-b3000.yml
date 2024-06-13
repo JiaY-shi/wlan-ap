@@ -1,0 +1,24 @@
+---
+profile: glinet_gl-b3000
+target: ipq50xx
+subtarget: generic
+description: Build image for the GL.iNet B3000
+image: bin/targets/ipq50xx/generic/openwrt-ipq50xx-glinet_b3000-squashfs-sysupgrade.tar
+feeds:
+  - name: ipq807x
+    path: ../../feeds/ipq807x_v5.4
+
+packages:
+  - ipq50xx
+  - wpad-openssl
+  - wireless-regdb
+  - iptables-mod-physdev
+  - kmod-qca-nss-drv-pppoe
+  - kmod-qca-nss-drv-pptp
+
+diffconfig: |
+  CONFIG_NET_IP_TUNNEL=y
+  CONFIG_KERNEL_IPQ_MEM_PROFILE=512
+  CONFIG_BUSYBOX_CUSTOM=y
+  CONFIG_PACKAGE_dnsmasq=n
+  CONFIG_PACKAGE_dnsmasq_full_ipset=y
