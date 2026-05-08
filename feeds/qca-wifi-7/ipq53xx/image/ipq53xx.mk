@@ -1,5 +1,21 @@
 KERNEL_LOADADDR := 0x40000000
 
+DEVICE_VARS += BOOT_SCRIPT ROOTFS_VOLNAME ROOTFSNAME_IN_UBI
+
+define Build/gl-ipq-factory-nand
+	$(CP) $(BOOT_SCRIPT) $(KDIR_TMP)/
+	sed -i "s/rootfs_size/`wc -c $@ | \
+	cut -d " " -f 1 | xargs printf "0x%x"`/g" $(KDIR_TMP)/$(notdir $(BOOT_SCRIPT));
+	$(TOPDIR)/scripts/mkits-qsdk-ipq-image.sh \
+		$@.its \
+		$(KDIR_TMP)/$(notdir $(BOOT_SCRIPT)) \
+		ubi \
+		$@
+	PATH=$(LINUX_DIR)/scripts/dtc:$(PATH) mkimage -f $@.its $@.new
+	@mv $@.new $@
+	$(RM) $@.its $(KDIR_TMP)/$(notdir $(BOOT_SCRIPT))
+endef
+
 define Device/cig_wf189
   DEVICE_TITLE := CIG WF189
   DEVICE_DTS := ipq5332-cig-wf189
@@ -242,3 +258,20 @@ define Device/indio_um-325be
   DEVICE_PACKAGES := ath12k-wifi-indio-um-325be ath12k-firmware-qcn92xx ath12k-firmware-ipq5332
 endef
 TARGET_DEVICES += indio_um-325be
+
+define Device/gl-be6500
+  DEVICE_TITLE := GL.iNet GL-BE6500
+  DEVICE_DTS := ipq5332-gl-be6500
+  DEVICE_DTS_DIR := ../dts
+  DEVICE_DTS_CONFIG := config@mi01.2
+  SUPPORTED_DEVICES := glinet,gl-be6500 gl-be6500
+  IMAGES := sysupgrade.tar nand-factory.bin nand-factory.ubi
+  BOOT_SCRIPT := glinet_gl-be6500.bootscript
+  BLOCKSIZE := 256k
+  PAGESIZE := 4096
+  ROOTFSNAME_IN_UBI := ubi_rootfs
+  IMAGE/sysupgrade.tar := sysupgrade-tar | append-metadata
+  IMAGE/nand-factory.bin := append-ubi | gl-ipq-factory-nand
+  DEVICE_PACKAGES := ath12k-firmware-qcn92xx ath12k-firmware-ipq5332 ath12k-wifi-gl-be6500
+endef
+TARGET_DEVICES += gl-be6500

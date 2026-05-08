@@ -1,0 +1,59 @@
+From ef708cbe1d5c4c4b6321d3bfc130a60dde6a7bce Mon Sep 17 00:00:00 2001
+From: JiaY-shi <shi05275@163.com>
+Date: Sat, 25 Apr 2026 08:39:40 +0800
+Subject: [PATCH] add gl-be6500 support
+
+---
+ include/image-commands.mk                      | 4 ++--
+ package/base-files/files/etc/shadow            | 2 +-
+ package/base-files/files/lib/upgrade/fwtool.sh | 9 +++++++--
+ 3 files changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/include/image-commands.mk b/include/image-commands.mk
+index b7a0d98d3d..39d76d2585 100644
+--- a/include/image-commands.mk
++++ b/include/image-commands.mk
+@@ -85,8 +85,8 @@ metadata_json = \
+ 			"revision": "$(call json_quote,$(REVISION))", \
+ 			"target": "$(call json_quote,$(TARGETID))", \
+ 			"board": "$(call json_quote,$(if $(BOARD_NAME),$(BOARD_NAME),$(DEVICE_NAME)))" \
+-		}, \
+-		"est_supported": 1 \
++		}$(if $(filter cloud_discovery,$(DEVICE_PACKAGES) $(DEFAULT_PACKAGES) $(call DEVICE_EXTRA_PACKAGES,$(DEVICE_NAME))),$(comma) \
++		"est_supported": 1) \
+ 	}'
+ 
+ define Build/append-metadata
+diff --git a/package/base-files/files/etc/shadow b/package/base-files/files/etc/shadow
+index 5b3f32ce64..39bdb9c90a 100644
+--- a/package/base-files/files/etc/shadow
++++ b/package/base-files/files/etc/shadow
+@@ -1,4 +1,4 @@
+-root:$1$Ev771IIe$RHpqhCLW3U6c5tg9MrkQD/:18473:0:99999:7:::
++root:::0:99999:7:::
+ daemon:*:0:0:99999:7:::
+ ftp:*:0:0:99999:7:::
+ network:*:0:0:99999:7:::
+diff --git a/package/base-files/files/lib/upgrade/fwtool.sh b/package/base-files/files/lib/upgrade/fwtool.sh
+index eb0465d4de..eeb5c8880b 100644
+--- a/package/base-files/files/lib/upgrade/fwtool.sh
++++ b/package/base-files/files/lib/upgrade/fwtool.sh
+@@ -51,8 +51,13 @@ fwtool_check_image() {
+ 	json_get_var compatmessage compat_message
+ 	[ -n "$imagecompat" ] || imagecompat="1.0"
+ 
+-	if ! est_client fwtool; then
+-		return 1
++	# EST validation is optional. Rescue/initramfs images may not ship the
++	# TIP cloud discovery stack, so only enforce this check when est_client
++	# is actually available on the running system.
++	if command -v est_client >/dev/null 2>&1; then
++		if ! est_client fwtool; then
++			return 1
++		fi
+ 	fi
+ 
+ 	# select correct supported list based on compat_version
+-- 
+2.51.0
+

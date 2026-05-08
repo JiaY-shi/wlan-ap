@@ -31868,7 +31868,7 @@ new file mode 100644
 index 000000000000..1d309c046c8d
 --- /dev/null
 +++ b/drivers/net/phy/swconfig_leds.c
-@@ -0,0 +1,571 @@
+@@ -0,0 +1,574 @@
 +/*
 + * swconfig_led.c: LED trigger support for the switch configuration API
 + *
@@ -32365,6 +32365,9 @@ index 000000000000..1d309c046c8d
 +					sw_trig->link_speed[i] =
 +						SWCONFIG_LED_PORT_SPEED_1000;
 +					break;
++				default:
++					sw_trig->link_speed[i] =
++						SWCONFIG_LED_PORT_SPEED_NA;
 +				}
 +			}
 +		}

@@ -8,22 +8,25 @@ Disables automatic network interface generation on firstboot, allowing uCentral 
 
 Signed-off-by: John Crispin <john@phrozen.org>
 ---
- package/base-files/files/bin/config_generate | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ package/base-files/files/bin/config_generate | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/package/base-files/files/bin/config_generate b/package/base-files/files/bin/config_generate
 index 18fae054d4..d6ef2a02cd 100755
 --- a/package/base-files/files/bin/config_generate
 +++ b/package/base-files/files/bin/config_generate
-@@ -528,7 +528,7 @@ if [ ! -s /etc/config/network ]; then
+@@ -528,7 +528,12 @@ if [ ! -s /etc/config/network ]; then
  	}
  
  	json_get_keys keys network
 -	for key in $keys; do generate_network $key $bridge_name; done
-+	#for key in $keys; do generate_network $key $bridge_name; done
++	case "$(cat /tmp/sysinfo/board_name 2>/dev/null)" in
++	glinet,gl-be6500)
++		for key in $keys; do generate_network $key $bridge_name; done
++		;;
++	esac
  
  	json_get_keys keys switch
  	for key in $keys; do generate_switch $key; done
 -- 
 2.34.1
-

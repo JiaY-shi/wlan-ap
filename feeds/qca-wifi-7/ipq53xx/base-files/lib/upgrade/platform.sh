@@ -328,6 +328,7 @@ platform_do_upgrade() {
 	indio,um-325be|\
 	zyxel,nwa130be|\
 	zyxel,nwa210be|\
+	glinet,gl-be6500|\
 	zyxel,nwa50be)
 		nand_upgrade_tar "$1"
 		;;
